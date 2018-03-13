@@ -1,4 +1,5 @@
-(deftemplate familiares 
+(deftemplate familiares
+(slot yo) 
 (slot padre) 
 (slot madre) 
 (multislot hermanos) 
@@ -8,4 +9,5 @@
 (multislot hijos))
 
 (deffacts familia_perez
-(familiares (padre pepe) (madre juana) (hermanos 
+(familiares (yo carlos) (padre pepe) (madre juana) (hermanos Julio Maria))
+)
