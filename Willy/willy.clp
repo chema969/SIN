@@ -11,14 +11,49 @@
 		
 		
 
-(defrule fireWilly
+(defrule fireWillyLeft
+       (declare (salience 10))
 	(hasLaser)
-	(directions $? ?direction $?)
-	=>
+       (and (casilla (fila ?f) (columna ?c) (estado alien))
+          (and (test (eq ?c ?*y*)) (test (< ?f ?*x*))))
+        =>
 	(bind ?*pasos* (+ ?*pasos* 1))
-	(fireLaser ?direction)
+	(fireLaser west)
 	)
 
+
+
+(defrule fireWillyRight
+       (declare (salience 10))
+	(hasLaser)
+       (and (casilla (fila ?f) (columna ?c) (estado alien))
+          (and (test (eq ?c ?*y*)) (test (> ?f ?*x*))))
+        =>
+	(bind ?*pasos* (+ ?*pasos* 1))
+	(fireLaser east)
+	)
+
+
+(defrule fireWillyUp
+       (declare (salience 10))
+	(hasLaser)
+       (and (casilla (fila ?f) (columna ?c) (estado alien))
+          (and (test (eq ?f ?*x*)) (test (> ?c ?*y*))))
+        =>
+	(bind ?*pasos* (+ ?*pasos* 1))
+	(fireLaser north)
+	)
+
+
+(defrule fireWillyDown
+       (declare (salience 10))
+	(hasLaser)
+       (and (casilla (fila ?f) (columna ?c) (estado alien))
+          (and (test (eq ?f ?*x*)) (test (< ?c ?*y*))))
+        =>
+	(bind ?*pasos* (+ ?*pasos* 1))
+	(fireLaser south)
+	)
 
 
 
@@ -145,13 +180,35 @@
 
 
   (defrule clear
-    (declare (salience 10))
+    (declare (salience 13))
      ?h1<-(casilla (fila ?x) (columna ?y) (estado ok))
-    (or (casilla (fila ?x) (columna ?y) (estado pull)) 
-     (casilla (fila ?x) (columna ?y) (estado noise)))
+    (or (casilla (fila ?x) (columna ?y) (estado Pull)) 
+     (casilla (fila ?x) (columna ?y) (estado Noise)))
 	 =>
 	 (retract ?h1))
   
+
+(defrule detect_alien_same_row 
+    (declare (salience 11))
+    (and(casilla (fila ?f) (columna ?c)(estado Noise))
+    (and(casilla (fila ?f) (columna ?x)(estado Noise))
+    (test (eq ?x (- ?c 2)))))
+    =>
+    (assert (casilla (fila ?f)(columna (+ ?x 1))(estado alien)))
+)
+
+
+(defrule detect_alien_same_column 
+    (declare (salience 11))
+    (and(casilla (fila ?f) (columna ?c)(estado Noise))
+    (and(casilla (fila ?x) (columna ?c)(estado Noise))
+    (test (eq ?x (- ?f 2)))))
+    =>
+    (assert (casilla (fila (+ ?x 1))(columna ?c)(estado alien)))
+)
+
+
+
 (defrule moveWillyLeftIfThereAreNoPlace
    (declare (salience -10))
    (directions $? west $?)
@@ -197,4 +254,3 @@
 	  (bind ?*y* (- ?*y* 1))
   (moveWilly south)
    )
-  
