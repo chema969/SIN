@@ -7,12 +7,12 @@
 	(slot fila)
 	(slot columna)
      )
-
-		
-		
+	
+(deffacts inicio 
+(casilla (fila 0) (columna 0) (estado ok)))		
 
 (defrule fireWillyLeft
-       (declare (salience 10))
+       (declare (salience 100))
 	(hasLaser)
        (and (casilla (fila ?f) (columna ?c) (estado alien))
           (and (test (eq ?c ?*y*)) (test (< ?f ?*x*))))
@@ -24,7 +24,7 @@
 
 
 (defrule fireWillyRight
-       (declare (salience 10))
+       (declare (salience 100))
 	(hasLaser)
        (and (casilla (fila ?f) (columna ?c) (estado alien))
           (and (test (eq ?c ?*y*)) (test (> ?f ?*x*))))
@@ -33,9 +33,8 @@
 	(fireLaser east)
 	)
 
-
 (defrule fireWillyUp
-       (declare (salience 10))
+       (declare (salience 100))
 	(hasLaser)
        (and (casilla (fila ?f) (columna ?c) (estado alien))
           (and (test (eq ?f ?*x*)) (test (> ?c ?*y*))))
@@ -46,7 +45,7 @@
 
 
 (defrule fireWillyDown
-       (declare (salience 10))
+       (declare (salience 100))
 	(hasLaser)
        (and (casilla (fila ?f) (columna ?c) (estado alien))
           (and (test (eq ?f ?*x*)) (test (< ?c ?*y*))))
@@ -122,10 +121,10 @@
   
 
 (defrule blackHoleMoveLeft
-  (test (> 999 ?*pasos*))
   (percepts $? ?p $?)
   (and(casilla (fila ?f) (columna ?c) (estado ok))
        (and (test (eq ?f (- ?*x* 1))) (test (eq ?c ?*y*))))
+  (test (> 999 ?*pasos*))
   =>
   (assert(casilla(fila ?*x*)(columna ?*y*)(estado ?p)))
   (bind ?*pasos* (+ ?*pasos* 1))
@@ -137,10 +136,10 @@
   
   
 (defrule blackHoleMoveRight
-  (test (> 999 ?*pasos*))
   (percepts $? ?p $?)
   (and(casilla (fila ?f) (columna ?c) (estado ok))
        (and (test (eq ?f (+ ?*x* 1))) (test (eq ?c ?*y*))))
+  (test (> 999 ?*pasos*))
   =>
   (assert(casilla(fila ?*x*)(columna ?*y*)(estado ?p)))
   (bind ?*pasos* (+ ?*pasos* 1))
@@ -152,10 +151,10 @@
   
   
   (defrule blackHoleMoveUp
-  (test (> 999 ?*pasos*))
   (percepts $? ?p $?)
   (and(casilla (fila ?f) (columna ?c) (estado ok))
        (and (test (eq ?f ?*x* )) (test (eq ?c (+ 1 ?*y*)))))
+  (test (> 999 ?*pasos*))
   =>
   (assert(casilla(fila ?*x*)(columna ?*y*)(estado ?p)))
   (bind ?*pasos* (+ ?*pasos* 1))
@@ -166,10 +165,10 @@
   
   
   (defrule blackHoleMoveDown
-   (test (> 999 ?*pasos*))
   (percepts $? ?p $?)
   (and(casilla (fila ?f) (columna ?c) (estado ok))
        (and (test (eq ?f ?*x* )) (test (eq ?c (- ?*y* 1)))))
+  (test (> 999 ?*pasos*))
   =>
   (assert(casilla(fila ?*x*)(columna ?*y*)(estado ?p)))
   (bind ?*pasos* (+ ?*pasos* 1))
@@ -208,7 +207,43 @@
 )
 
 
+(defrule detect_alien_L_1
+    (declare (salience 11))
+	(and (casilla (fila ?f) (columna ?c) (estado ok))
+	(and (casilla (fila ?x) (columna ?c) (estado Noise))
+	(and (casilla (fila ?f) (columna ?y) (estado Noise))
+	(and (test (eq ?f (- ?x 1))) (test (eq ?c (- ?y 1)))))))
+	=>
+	(assert (casilla (fila ?x) (columna ?y) (estado alien))))	
+	
+(defrule detect_alien_L_2
+    (declare (salience 11))
+	(and (casilla (fila ?f) (columna ?c) (estado ok))
+	(and (casilla (fila ?x) (columna ?c) (estado Noise))
+	(and (casilla (fila ?f) (columna ?y) (estado Noise))
+	(and (test (eq ?f (+ ?x 1))) (test (eq ?c (- ?y 1)))))))
+	=>
+	(assert (casilla (fila ?x) (columna ?y) (estado alien))))	
 
+(defrule detect_alien_L_3
+    (declare (salience 11))
+	(and (casilla (fila ?f) (columna ?c) (estado ok))
+	(and (casilla (fila ?x) (columna ?c) (estado Noise))
+	(and (casilla (fila ?f) (columna ?y) (estado Noise))
+	(and (test (eq ?f (- ?x 1))) (test (eq ?c (+ ?y 1)))))))
+	=>
+	(assert (casilla (fila ?x) (columna ?y) (estado alien))))	
+
+(defrule detect_alien_L_4
+    (declare (salience 11))
+	(and (casilla (fila ?f) (columna ?c) (estado ok))
+	(and (casilla (fila ?x) (columna ?c) (estado Noise))
+	(and (casilla (fila ?f) (columna ?y) (estado Noise))
+	(and (test (eq ?f (+ ?x 1))) (test (eq ?c (+ ?y 1)))))))
+	=>
+	(assert (casilla (fila ?x) (columna ?y) (estado alien))))
+	
+	
 (defrule moveWillyLeftIfThereAreNoPlace
    (declare (salience -10))
    (directions $? west $?)
